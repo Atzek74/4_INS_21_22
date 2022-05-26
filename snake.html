@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Snake</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            /**{
+                border: 1px solid black;
+            }*/
+            body{
+                position: relative;
+                width: 800px;
+                height: 700px;
+                margin: 50px auto;
+            }
+            #intro{
+                display: block;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                font-family: courier, courier new;
+                width: 800px;
+                height: 700px;
+                background-color: lightgray;
+            }
+            #intro h1{
+                font-size: 120px;
+                padding-top: 10px;
+                text-align: center;
+            }
+            #intro p {
+                font-size: 20px;
+                padding: 0px 80px;
+                text-align: justify
+                
+                
+            }
+
+            
+            #schermo{
+                display: grid;
+                grid-template-columns: repeat(40, 20px);
+                grid-template-rows: repeat(30, 20px);
+                width: 800px;
+                height: 600px;
+                background-color: lightgray;
+            }
+            
+            #gameOver{
+                display: block;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                font-family: courier, courier new;
+                width: 800px;
+                height: 700px;
+                background-color: lightgray;
+            }
+            
+            #gameOver h1{
+                font-size: 120px;
+                padding-top: 10px;
+                text-align: center;
+            }
+            #gameOver p {
+                font-size: 20px;    
+                text-align: center;
+                margin-top: 100px;
+            }
+            
+            
+            #contenitore{
+                display: flex;
+            }
+            
+            #score{
+                flex: 15%;
+                font-size: 20px;
+                font-weight: bold;
+                background-color: black;
+                color: lightgrey;
+                padding: 10px
+                
+            }
+            
+            #menu{
+                flex:85%;
+                background-color: black; 
+                color: lightgrey;
+                text-align: right;
+                font-size: 20px;
+                font-weight: bold;
+                padding: 10px;
+            }
+            
+            .verme{
+                border-radius: 10px 10px 10px 10px;
+                background-color: black;
+            }
+            
+            #testa{
+                background-color: red;
+            }
+            
+            #cibo{
+                background-color: green;
+                
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div id="schermo"></div>
+        <div id="contenitore">
+            <div id="score">punti ...: <span id="punti">0</span></div>
+            <div id="menu">spazio: pausa/riparti &nbsp &nbsp freccie: muovi &nbsp &nbsp F5: inizio</div>
+    </body>
+    
+    <!--
+    
+    
+    SCHERMATA INIZIALE
+    
+    
+    -->
+    
+    <div id="intro">
+            <h1> SNAKE </h1>
+                
+            <p style="text-align: center">Snake ha fame... aiutalo a sfamarsi... <br>
+               più Snake mangia, più cresce...<br>
+               piu Snake mangia, più corre...<br>
+               se Snake si mangia, muore...
+               <br>
+            </p>
+            <br>
+	    <br>
+			
+            <p style="text-align: center">premi s per iniziare</p>
+            
+        
+    </div>
+    <!-- ######################### -->
+    
+    <script>
+        
+        const body =document.querySelector("body");
+        const schermo =document.querySelector("#schermo");
+        const intro =document.querySelector("#intro");
+        const punti=document.querySelector("#punti");
+        
+        //posizione iniziale del verme
+        
+        
+        let Testa =[7,10];
+        let Corpo =[[6,10],[5,10],[4,10],[3,10]];
+        
+        let pause =false;
+        let punteggio=0;
+        let dir="dx";
+        
+        //funzione per creare 1 pallino
+        
+        function creaPallino (x,y,id){
+            const s=document.createElement('div');
+            s.style.gridColumn=(x);
+            s.style.gridRow=(y);
+            s.setAttribute("class","verme");
+            s.setAttribute("id",id);
+            schermo.appendChild(s);
+        }
+        
+        
+        //funzione per creare il verme, gli passo vettore testa, vettore di vettori corpo e posizione del cibo
+        function creaVerme(testa,corpo,cx,cy) {
+            document.getElementById('schermo').innerHTML="";   //pulisco lo schermo
+            creaPallino(cx,cy,"cibo");                         //creo il cibo 
+            creaPallino(testa[0],testa[1],"testa");            //creo la testa  
+            for (let i=0; i<corpo.length; i++){                //creo il corpo
+                creaPallino(corpo[i][0],corpo[i][1]);
+            }
+        }
+        
+        let posTestaX=Testa[0];
+        let posTestaY=Testa[1];
+        
+        let posTestaXold;
+        let posTestaYold;
+        
+        let ciboX;
+        let ciboY;
+        
+        let id;
+        
+        let velocità=500;
+        let allunga=false;
+        let oneShot=true;
+        
+        //aggiungo listener s, ascolto se premo s, se premuto rimuovo il listener    
+        document.addEventListener('keydown',avvia);
+                function avvia(e) {
+                    if(e.key == "s"){
+                        intro.parentNode.removeChild(intro);
+                        spostaVerme();
+                        console.log(e.key);
+                        document.removeEventListener('keydown',avvia);
+                    }
+                }        
+        //aggiungo listener pausa, ascolto se premo spazio, 
+        //se premuto rimuovo il listener di pausa e aggiungo il listener di resume
+        document.addEventListener('keydown',pausa);
+                function pausa(e) {
+                    if(e.key == " "){
+                        clearInterval(id);
+                        document.removeEventListener('keydown',pausa);
+                        document.addEventListener('keydown',start);
+                        console.log(e.key+"di pausa");
+                    }
+                }
+        
+                function start(e) {
+                    if(e.key == " "){
+                        spostaVerme();
+                        document.removeEventListener('keydown',start);
+                        document.addEventListener('keydown',pausa);
+                        console.log(e.key+"di start");
+                    }
+                }        
+                            
+        function spostaVerme(){
+            //creo il cibo solo la prima volta
+            if (oneShot){
+                ciboX=Math.floor(Math.random()*((40+1)-1) + 1);
+                ciboY=Math.floor(Math.random()*((30+1)-1) + 1);
+                creaPallino(ciboX,ciboY,"cibo");  
+                oneShot=false;
+            }
+            
+            //chiamo ad intervalli muovi... il verme si sposta
+            id = setInterval(muovi,velocità);
+                   
+        
+//****************************** 
+// corpo del programma
+//*******************************
+
+        
+        function muovi(){
+            if ((ciboX==posTestaX) && (ciboY==posTestaY)){
+                    ciboX=Math.floor(Math.random()*((40+1)-1) + 1);
+                    ciboY=Math.floor(Math.random()*((30+1)-1) + 1); 
+                    allunga=true;
+                    punteggio++;
+                    punti.innerHTML=punteggio;
+                    clearInterval(id);
+                    
+                    
+                    //if (morto=true)
+                    if (velocità>=30){
+                        velocità=velocità-20; 
+                    }
+                        spostaVerme();
+            }
+             
+                
+                    posTestaXold=posTestaX;
+                    posTestaYold=posTestaY;
+                
+                
+            //verifico il tasto premuto    
+            document.addEventListener('keydown',keyDownHandler);
+                function keyDownHandler(e) {
+                    if((e.key == "Right" || e.key == "ArrowRight")&& dir!="sx" ) {
+                        dir="dx";
+                        document.removeEventListener('keydown',keyDownHandler);
+                    }
+                    
+                    if((e.key == "Left" || e.key == "ArrowLeft")&& dir!="dx") {
+                        dir="sx";
+                        document.removeEventListener('keydown',keyDownHandler);
+                    }
+                    
+                    if((e.key == "Up" || e.key == "ArrowUp")&& dir!="giù") {
+                        dir="su";
+                        document.removeEventListener('keydown',keyDownHandler);
+                    }
+                    
+                    if((e.key == "Down" || e.key == "ArrowDown")&& dir!="su") {
+                        dir="giù";
+                        document.removeEventListener('keydown',keyDownHandler);
+                    }
+                }
+                //verifico la posizione al limite della testa
+                if ((posTestaX==40) && (dir=="dx")){
+                    posTestaX=0;
+                }
+                if ((posTestaX==1) && (dir=="sx")){
+                    posTestaX=41;
+                }
+                if ((posTestaY==30) && (dir=="giù")){
+                    posTestaY=0;
+                }
+                if ((posTestaY==1) && (dir=="su")){
+                    posTestaY=30;
+                
+                }else{
+                    //sposto la testa
+                    switch(dir){
+                        case "su":
+                            posTestaY--;
+                        break;
+                        case "giù":
+                            posTestaY++;
+                        break;
+                        case "sx":
+                            posTestaX--;
+                        break;
+                        case "dx":
+                            posTestaX++;
+                        break;
+                    }
+                }
+
+                let testaNew=[posTestaX,posTestaY];
+                document.addEventListener('keydown',keyDownHandler);//messo qua percho non si mangi cambiando direzione                
+                
+                let corpoNew=[[posTestaXold,posTestaYold]];//primo pallino del corpo
+                let Lcorpo;
+                //verifico se devo allungare
+                if (allunga){
+                    Lcorpo = (Corpo.length);
+                } else{
+                    Lcorpo = (Corpo.length-1);
+                }
+                    
+                //continuo con le coordinate del corpoNew
+                
+                for (let i =0;i<(Lcorpo);i++){
+                    let lunghezza=corpoNew.length;
+                    corpoNew[lunghezza]= [Corpo[i][0],Corpo[i][1]];
+                    allunga =false;
+                }
+                
+                //copio coordinate corpoNew in Corpo
+                
+                for (let i =0;i<corpoNew.length;i++){
+                    let lunghezza=corpoNew.length;
+                    Corpo[i]= [corpoNew[i][0],corpoNew[i][1]];
+                }
+                //creo verme e cibo
+                creaVerme(testaNew,Corpo,ciboX,ciboY);
+                
+            
+                //verifico se si mangia
+                
+                for (let i=0; i<Corpo.length;i++){
+
+                    if ((Corpo[i][0]==posTestaX) && (Corpo[i][1]==posTestaY)){
+                        schermo.innerHTML ="";
+                        
+                        document.removeEventListener('keydown',pausa);
+                        gameOver();
+                        
+                  
+                        
+                        
+                        
+                        
+                    }    
+                }
+            }
+            
+            
+            
+            
+            
+        }
+        
+
+    function gameOver(){
+        clearInterval(id);
+        console.log("qui!!!");
+        var newEl=document.createElement('div');
+        newEl.setAttribute("id","gameOver");
+        newEl.innerHTML="<h1>GAME OVER</h1><p>punteggio..: "+punteggio+"</p><p>premi F5 per ripartire</p>";
+        body.appendChild(newEl);
+    }
+
+
+         
+        
+    
+    </script>
+</html>
