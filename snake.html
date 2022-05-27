@@ -178,9 +178,52 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         
         //funzione per creare il verme, gli passo vettore testa, vettore di vettori corpo e posizione del cibo
         function creaVerme(testa,corpo,cx,cy) {
-            document.getElementById('schermo').innerHTML="";   //pulisco lo schermo
-            creaPallino(cx,cy,"cibo");                         //creo il cibo 
-            creaPallino(testa[0],testa[1],"testa");            //creo la testa  
+
+        document.getElementById('schermo').innerHTML="";   //pulisco lo schermo
+		//**********************************	
+			let contatto = false;
+			let cT = false;
+			let cC = false;
+			
+			if ((testa[0]==cx)&&testa[1]==cy){
+				cT=true;
+			}
+	
+			let i=0;
+			while(i<corpo.length && cC==false){
+				console.log("sono nel while");
+				
+				if ((corpo[i][0]==cx) && (Corpo[i][1]==cy)){
+						cC=true;
+				console.log("sono nell'if");
+				}	
+				i++;		
+			}
+			
+			console.log(contatto,cT,cC);
+			
+			contatto=cT || cC;
+			
+			console.log(contatto,cT,cC);
+			
+			if (!contatto){
+				creaPallino(cx,cy,"cibo");
+				console.log("creo pallino");
+				
+			}
+			console.log("non creo il pallino");
+			
+			contatto=false;
+			cT=false;
+			cC=false;
+             
+        
+        
+        
+        
+        
+        
+        creaPallino(testa[0],testa[1],"testa");            //creo la testa  
             for (let i=0; i<corpo.length; i++){                //creo il corpo
                 creaPallino(corpo[i][0],corpo[i][1]);
             }
