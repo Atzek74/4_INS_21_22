@@ -1,8 +1,7 @@
 # Snake
-progetto in javascript, untimo modulo 4 informatica (21/22)
 
-ricreare il gioco snake in giavascript
+snake in javascript
 
-
+tesina finale per il 4 anno di informatica (corso serale - ITT Buonarroti Trento - anno 21/22) 
 
 
