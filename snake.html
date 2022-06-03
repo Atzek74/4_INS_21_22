@@ -37,11 +37,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 font-size: 20px;
                 padding: 0px 80px;
                 text-align: justify
-                
-                
             }
 
-            
             #schermo{
                 display: grid;
                 grid-template-columns: repeat(40, 20px);
@@ -73,7 +70,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 margin-top: 100px;
             }
             
-            
             #contenitore{
                 display: flex;
             }
@@ -85,7 +81,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 background-color: black;
                 color: lightgrey;
                 padding: 10px
-                
             }
             
             #menu{
@@ -179,57 +174,48 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         //funzione per creare il verme, gli passo vettore testa, vettore di vettori corpo e posizione del cibo
         function creaVerme(testa,corpo,cx,cy) {
 
-        document.getElementById('schermo').innerHTML="";   //pulisco lo schermo
-		//**********************************	
-			let contatto = false;
-			let cT = false;
-			let cC = false;
-			
-			/*if ((testa[0]==cx)&&testa[1]==cy){
-				cT=true;
-			}*/
-	
-			let i=0;
-			while(i<corpo.length && cC==false){
-				console.log("sono nel while");
-				
-				if ((corpo[i][0]==cx) && (Corpo[i][1]==cy)){
-						cC=true;
-				console.log("sono nell'if");
-				}	
-				i++;		
-			}
-			
-			console.log(contatto,cT,cC);
-			
-			//contatto=cT || cC;
-			contatto=cC;
-                        
-			console.log(contatto,cT,cC);
-			
-			if (!contatto){
-				creaPallino(cx,cy,"cibo");
-				console.log("creo pallino");
-                                console.log(velocità);
-				
-			}else{
-                            ciboX=Math.floor(Math.random()*((40+1)-1) + 1);
-                            ciboY=Math.floor(Math.random()*((30+1)-1) + 1);
-                        }
-			console.log("non creo il pallino");
-			
-			contatto=false;
-			cT=false;
-			cC=false;
-                         
-             
-        
-        
-        
-        
-        
-        
-        creaPallino(testa[0],testa[1],"testa");            //creo la testa  
+            document.getElementById('schermo').innerHTML="";   //pulisco lo schermo
+            
+            //**********************************	
+            let contatto = false;
+            //let cT = false;
+            //let cC = false;
+
+            let i=0;
+            while(i<corpo.length && contatto==false){
+                    console.log("sono nel while");
+
+                    if ((corpo[i][0]==cx) && (Corpo[i][1]==cy)){
+                                    //cC=true;
+                                    contatto=true;
+                    console.log("sono nell'if");
+                    }	
+                    i++;		
+            }
+
+            //console.log(contatto,cT,cC);
+
+
+            //contatto=cC;
+
+            //console.log(contatto,cT,cC);
+
+            if (!contatto){
+                    creaPallino(cx,cy,"cibo");
+                    console.log("creo pallino");
+                    console.log(velocità);
+
+            }else{
+                ciboX=Math.floor(Math.random()*((40+1)-1) + 1);
+                ciboY=Math.floor(Math.random()*((30+1)-1) + 1);
+            }
+            console.log("non creo il pallino");
+
+            contatto=false;
+            //cT=false;
+            //cC=false;
+
+            creaPallino(testa[0],testa[1],"testa");            //creo la testa  
             for (let i=0; i<corpo.length; i++){                //creo il corpo
                 creaPallino(corpo[i][0],corpo[i][1]);
             }
@@ -323,6 +309,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 function keyDownHandler(e) {
                     if((e.key == "Right" || e.key == "ArrowRight")&& dir!="sx" ) {
                         dir="dx";
+                        //rimuovo listener per evitare che i tasti vengano premuti più volte
+                        //lo rimetto più sotto
                         document.removeEventListener('keydown',keyDownHandler);
                     }
                     
@@ -373,7 +361,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 }
 
                 let testaNew=[posTestaX,posTestaY];
-                document.addEventListener('keydown',keyDownHandler);//messo qua percho non si mangi cambiando direzione                
+                document.addEventListener('keydown',keyDownHandler);               
                 
                 let corpoNew=[[posTestaXold,posTestaYold]];//primo pallino del corpo
                 let Lcorpo;
