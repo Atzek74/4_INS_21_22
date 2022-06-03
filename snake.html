@@ -185,9 +185,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 			let cT = false;
 			let cC = false;
 			
-			if ((testa[0]==cx)&&testa[1]==cy){
+			/*if ((testa[0]==cx)&&testa[1]==cy){
 				cT=true;
-			}
+			}*/
 	
 			let i=0;
 			while(i<corpo.length && cC==false){
@@ -202,20 +202,26 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 			
 			console.log(contatto,cT,cC);
 			
-			contatto=cT || cC;
-			
+			//contatto=cT || cC;
+			contatto=cC;
+                        
 			console.log(contatto,cT,cC);
 			
 			if (!contatto){
 				creaPallino(cx,cy,"cibo");
 				console.log("creo pallino");
+                                console.log(velocità);
 				
-			}
+			}else{
+                            ciboX=Math.floor(Math.random()*((40+1)-1) + 1);
+                            ciboY=Math.floor(Math.random()*((30+1)-1) + 1);
+                        }
 			console.log("non creo il pallino");
 			
 			contatto=false;
 			cT=false;
 			cC=false;
+                         
              
         
         
@@ -302,12 +308,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     punti.innerHTML=punteggio;
                     clearInterval(id);
                     
+                    velocità=500 * Math.log10(5)/Math.log10(punteggio+5);
                     
-                    //if (morto=true)
-                    if (velocità>=30){
-                        velocità=velocità-20; 
-                    }
-                        spostaVerme();
+                    spostaVerme();
             }
              
                 
